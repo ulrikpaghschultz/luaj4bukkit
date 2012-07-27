@@ -1,0 +1,23 @@
+name: luaj4bukkit
+main: dk.sdu.mmmi.modular.luaj4bukkit.LuaJ4BukkitPlugin
+version: 0.1
+permissions:
+   luaj4bukkit:
+      description: Allows you to run lua scripts
+      default: op
+commands:
+   lua:
+      description: Evaluate lua command
+      usage: /lua line, where line is a valid lua statement
+      permission: luaj4bukkit
+      permission-message: You don't have permission to run Lua scripts
+   lua.load:
+      description: Load a lua file in the current environment
+      usage: /lua.load filename, relative to default location
+      permission: luaj4bukkit
+      permission-message: You don't have permission to run Lua scripts
+   lua.reload:
+      description: Reload the default startup file
+      usage: /lua.reload
+      permission: luaj4bukkit
+      permission-message: You don't have permission to run Lua scripts
