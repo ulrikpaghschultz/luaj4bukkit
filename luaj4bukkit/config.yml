@@ -1,6 +1,0 @@
-files.default_path_prefix: lua/
-startup.init_file_name: startup.lua
-startup.load_init_file: true
-startup.load_internal_definitions: true
-startup.internal_definitions: dk.sdu.mmmi.modular.luaj4bukkit.LuaMinecraftLib
- 
