@@ -48,13 +48,26 @@ public class LuaJ4BukkitPlugin extends JavaPlugin {
 	private GameEventHandler eventHandler;
 	
 	/**
+	 * The Lua environments instance
+	 */
+	private LuaEnvironment environment;
+	
+	/**
 	 * Obtain event handler used for routing events from bukkit to lua
 	 * @return event handler instance
 	 */
 	public GameEventHandler getEventHandler() {
 		return eventHandler;
 	}
-	
+
+	/**
+	 * Obtain Lua environments used for evaluating commands
+	 * @return the set of environments
+	 */
+	public LuaEnvironment getLuaEnvironment() {
+		return environment;
+	}
+
 	/**
 	 * Initialize resources
 	 */
@@ -63,8 +76,8 @@ public class LuaJ4BukkitPlugin extends JavaPlugin {
 		instance = this;
 		loadConfiguration();
 		// Initialize lua environment manager
-		LuaEnvironment env = new LuaEnvironment(this);
-		InteractivePrompt prompt = new InteractivePrompt(this,env);
+		environment = new LuaEnvironment(this);
+		InteractivePrompt prompt = new InteractivePrompt(this,environment);
 		// Instantiate event handler
 		eventHandler = new GameEventHandler(this);
 		// Set up commands & ready
@@ -80,6 +93,7 @@ public class LuaJ4BukkitPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		eventHandler = null;
+		environment = null;
 		HandlerList.unregisterAll(this);
 		instance = null;
 	}
@@ -151,4 +165,5 @@ public class LuaJ4BukkitPlugin extends JavaPlugin {
 	private static final String CONFIG_LOAD_STARTUP = "startup.load_init_file";
 	private static final String CONFIG_LOAD_INTERNAL = "startup.load_internal_definitions";
 	private static final String CONFIG_INTERNAL_DEFS = "startup.internal_definitions";
+
 }

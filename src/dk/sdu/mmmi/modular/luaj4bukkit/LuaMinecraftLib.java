@@ -22,12 +22,15 @@
 
 package dk.sdu.mmmi.modular.luaj4bukkit;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
 /**
  * Internally loaded minecraft Lua library, providing various functionalities from Java
@@ -49,10 +52,10 @@ public class LuaMinecraftLib extends OneArgFunction {
 	@Override
 	public LuaValue call(LuaValue arg) {
 		switch(opcode) {
-		case 0: {
+		case 0: { // initialize function table
 			LuaValue dispatchTable = tableOf();
 			this.bind(dispatchTable, LuaMinecraftLib.class, new String[] { "classForName" }, 1 );
-			this.bind(dispatchTable, TwoArgDispatch.class, new String[] { "handleEvent" }, 1 );
+			this.bind(dispatchTable, TwoArgDispatch.class, new String[] { "handleEvent", "displayString" }, 1 );
 			env.set("minecraft", dispatchTable);
 			return dispatchTable;
 		}
@@ -86,6 +89,15 @@ public class LuaMinecraftLib extends OneArgFunction {
 				} catch (ClassNotFoundException e) {
 					throw new LuaError("Illegal event class name, not found: "+eventClassName);
 				}
+			}
+			case 2: { // print: a print function with output to the player (arg1), if any, of text string (arg2)
+				LuaEnvironment env = LuaJ4BukkitPlugin.getInstance().getLuaEnvironment(); // has display message function
+				CommandSender receiver = null;
+				if(arg1!=LuaValue.NIL) {
+					receiver = (Player) CoerceLuaToJava.coerce(arg1, Player.class);
+				}
+				env.displayMessage(receiver, arg2.tojstring());
+				return this;
 			}
 			default: return error("bad opcode: "+opcode);
 			}

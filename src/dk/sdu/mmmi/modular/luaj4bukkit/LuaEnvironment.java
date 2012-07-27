@@ -117,7 +117,7 @@ public class LuaEnvironment {
 	 * @param sender the player
 	 * @return the interactive environment for that player, with variables set useful values
 	 */
-	public synchronized LuaValue getPlayerEnvironment(Player sender) {
+	private synchronized LuaValue getPlayerEnvironment(Player sender) {
 		// Get the unique per-player environment
 		LuaValue env = playerEnvironments.get(sender);
 		if(env==null) {
@@ -131,6 +131,12 @@ public class LuaEnvironment {
 		return env;
 	}
 
+	/**
+	 * Evaluate a single Lua command using loadstring
+	 * @param sender the sender on the part of whom the command is evaluated
+	 * @param env the environment in which the command is evaluated
+	 * @param command the textual representation of the command
+	 */
 	public void evaluateSingleCommand(CommandSender sender, LuaValue env, String completeCommand) {
 		try {
 			LuaValue closure = env.get("loadstring").call(LuaValue.valueOf(completeCommand));
@@ -144,6 +150,12 @@ public class LuaEnvironment {
 		}
 	}
 
+	/**
+	 * Evaluate a sequence of commands from a file
+	 * @param sender the sender on the part of whom the commands are evaluated
+	 * @param env the environment in which the commands are evaluated
+	 * @param fileName the relative filename to load the commands from
+	 */
 	public void evaluateCommandsFromFile(CommandSender sender, LuaValue env, String fileName) {
 		try {
 			LuaValue result = env.get("dofile").call(LuaValue.valueOf(plugin.getConfig_path_prefix()+fileName));
@@ -157,12 +169,21 @@ public class LuaEnvironment {
 	 * @param sender who the error should be report to
 	 * @param message the message to report
 	 */
-	private void reportError(CommandSender sender, String message) {
+	public void reportError(CommandSender sender, String message) {
+		displayMessage(sender,"Error evaluating lua command: "+message);
+	}
+
+	/**
+	 * Display a message to the corresponding sender
+	 * @param sender
+	 * @param message
+	 */
+	public void displayMessage(CommandSender sender, String message) {
 		if(sender instanceof Player) {
 			Player player = (Player)sender;
-			player.sendMessage("Error evaluating lua command: "+message);
+			player.sendMessage(message);
 		} else {
-			plugin.getLogger().info("Lua error: "+message);
+			plugin.getLogger().info(message);
 		}
 	}
 
